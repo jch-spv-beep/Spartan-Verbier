@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spartan Verbier">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="apple-touch-icon" href="https://em-content.zobj.net/source/apple/354/mountain_26f0-fe0f.png">
+<title>Spartan Verbier 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+html { font-size: 20px; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+body { background: #0a0a0a; color: #ede8e0; font-family: 'Barlow', sans-serif; font-size: 20px; overscroll-behavior: none; }
+::-webkit-scrollbar { display: none; }
+
+/* NAV */
+#nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.97); border-top: 1px solid #252525; display: flex; padding-bottom: env(safe-area-inset-bottom,0); }
+.nb { flex: 1; background: none; border: none; cursor: pointer; padding: 12px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #666; font-family: 'Barlow', sans-serif; }
+.nb.on { color: #e8300f; }
+.nb svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.nb span { font-size: 0.55rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+
+/* PAGES */
+.page { display: none; padding-bottom: calc(72px + env(safe-area-inset-bottom,0)); min-height: 100vh; overflow-y: auto; }
+.page.on { display: block; }
+
+/* SHARED */
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 2px; }
+.ph { padding: 48px 20px 20px; border-bottom: 1px solid #252525; }
+.card { background: #141414; border: 1px solid #252525; margin-bottom: 10px; }
+
+/* HOME */
+.home-glow { position: absolute; top: -80px; right: -80px; width: 280px; height: 280px; background: radial-gradient(circle, rgba(232,48,15,0.18) 0%, transparent 65%); pointer-events: none; }
+.home-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #e8300f; border: 1px solid #e8300f; display: inline-block; padding: 4px 12px; margin-bottom: 14px; }
+.big-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(58px,15vw,90px); line-height: 0.85; letter-spacing: 3px; }
+.big-title span { color: #e8300f; }
+.home-meta { margin-top: 10px; font-size: 0.75rem; color: #666; font-weight: 300; }
+
+.stats { display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid #252525; border-bottom: 1px solid #252525; }
+.stat { padding: 16px 8px; text-align: center; border-right: 1px solid #252525; }
+.stat:last-child { border-right: none; }
+.stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: #e8300f; line-height: 1; }
+.stat-l { font-size: 0.5rem; color: #666; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+
+.prog-card { margin: 16px 16px 0; background: #141414; border: 1px solid #252525; padding: 18px; }
+.prog-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #666; margin-bottom: 14px; }
+.prog-phases { display: flex; gap: 4px; margin-bottom: 6px; }
+.prog-phase { flex: 1; }
+.prog-bar-wrap { height: 6px; background: #252525; border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+.prog-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.prog-phase-label { font-size: 0.45rem; letter-spacing: 1px; text-transform: uppercase; color: #666; text-align: center; }
+.prog-pct { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: #e8300f; line-height: 1; }
+.prog-sub { font-size: 0.7rem; color: #666; }
+
+.next-card { margin: 12px 16px 0; background: rgba(232,48,15,0.08); border: 1px solid #e8300f; padding: 16px; }
+.next-label { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: #e8300f; margin-bottom: 8px; font-weight: 700; }
+.next-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 1px; }
+.next-desc { font-size: 0.78rem; color: #bbb; margin-top: 4px; font-weight: 300; }
+.next-btn { margin-top: 12px; width: 100%; padding: 14px; background: #e8300f; border: none; cursor: pointer; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 2px; color: #fff; }
+
+.tips-row { display: flex; gap: 10px; padding: 12px 16px 0; overflow-x: auto; }
+.tip-chip { flex-shrink: 0; background: #141414; border: 1px solid #252525; padding: 10px 14px; max-width: 200px; }
+.tip-icon { font-size: 1.1rem; margin-bottom: 4px; }
+.tip-title { font-size: 0.7rem; font-weight: 700; margin-bottom: 2px; }
+.tip-text { font-size: 0.68rem; color: #bbb; line-height: 1.5; }
+
+/* PLAN */
+.phase-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid #252525; }
+.phase-tab { flex-shrink: 0; padding: 14px 14px; font-size: 0.62rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; border-bottom: 3px solid transparent; color: #666; background: none; border-top: none; border-left: none; border-right: none; white-space: nowrap; font-family: 'Barlow', sans-serif; }
+.phase-intro { padding: 20px 16px 16px; border-bottom: 1px solid #252525; position: relative; overflow: hidden; }
+.phase-ghost { position: absolute; right: -8px; top: -24px; font-family: 'Bebas Neue', sans-serif; font-size: 150px; opacity: 0.04; pointer-events: none; line-height: 1; }
+.phase-badge { display: inline-block; font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; margin-bottom: 10px; border-radius: 1px; }
+.phase-name { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; line-height: 1; }
+.phase-desc { font-size: 0.78rem; color: #666; margin-top: 6px; line-height: 1.6; font-weight: 300; }
+.weeks-wrap { padding: 12px 16px; }
+
+.week-card { background: #141414; border: 1px solid #252525; margin-bottom: 10px; overflow: hidden; }
+.week-card.decharge { border-color: #444; }
+.week-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; }
+.week-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; }
+.week-focus { font-size: 0.72rem; color: #666; margin-top: 2px; }
+.week-check { width: 30px; height: 30px; border-radius: 50%; background: #1c1c1c; border: 1px solid #252525; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+.week-check.done { background: #30c070; border-color: #30c070; color: #fff; }
+.week-toggle { font-size: 1.1rem; color: #666; transition: transform 0.2s; }
+.week-card.open .week-toggle { transform: rotate(45deg); }
+.week-body { display: none; padding: 0 16px 16px; border-top: 1px solid #252525; }
+.week-card.open .week-body { display: block; }
+
+.session { margin-top: 18px; padding-left: 16px; }
+.session-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+.session-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; }
+.check-btn { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; cursor: pointer; background: #1c1c1c; border: 1px solid #252525; padding: 11px 14px; width: 100%; font-family: 'Barlow', sans-serif; font-size: 0.8rem; color: #666; }
+.check-btn.done { background: rgba(48,192,112,0.1); border-color: #30c070; color: #30c070; }
+.check-circle { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #444; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.65rem; }
+.check-btn.done .check-circle { background: #30c070; border-color: #30c070; color: #fff; }
+.ankle-note { margin-top: 0; margin-bottom: 10px; padding: 12px 14px; background: rgba(64,136,240,0.08); border-left: 2px solid #4088f0; font-size: 0.78rem; color: #bbb; line-height: 1.6; }
+.ankle-note strong { color: #4088f0; font-size: 0.55rem; letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.detail-btn { background: none; border: none; color: #666; font-size: 0.7rem; cursor: pointer; padding: 6px 0; font-family: 'Barlow', sans-serif; }
+.exo-list { display: none; margin-top: 6px; }
+.exo-list.open { display: block; }
+.exo-item { font-size: 0.85rem; color: #bbb; padding: 10px 12px; background: rgba(255,255,255,0.025); display: flex; align-items: flex-start; gap: 10px; line-height: 1.55; margin-bottom: 8px; }
+.exo-arrow { color: #666; flex-shrink: 0; margin-top: 1px; }
+.session-tip { margin-top: 10px; padding: 12px 14px; background: rgba(232,48,15,0.07); border-left: 2px solid #e8300f; font-size: 0.78rem; color: #bbb; line-height: 1.6; }
+.session-tip strong { color: #e8300f; font-size: 0.55rem; letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+/* SUIVI */
+.week-nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 0; }
+.nav-arrow { background: #141414; border: 1px solid #252525; width: 44px; height: 44px; cursor: pointer; font-size: 1.2rem; color: #ede8e0; display: flex; align-items: center; justify-content: center; }
+.nav-arrow:disabled { color: #444; cursor: default; }
+.week-nav-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 1px; }
+.ring-card { margin: 12px 16px 0; background: #141414; border: 1px solid #252525; padding: 14px; display: flex; align-items: center; gap: 12px; }
+.ring-wrap { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
+.ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; }
+.ring-done { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; line-height: 1; }
+.ring-sub { font-size: 0.72rem; color: #666; margin-top: 2px; }
+.suivi-sessions { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.suivi-card { background: #141414; border: 1px solid #252525; padding: 18px; display: flex; align-items: center; gap: 14px; cursor: pointer; }
+.suivi-card.done { background: rgba(48,192,112,0.06); border-color: rgba(48,192,112,0.3); }
+.suivi-circle { width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0; border: 2px solid #252525; display: flex; align-items: center; justify-content: center; font-size: 1rem; background: #1c1c1c; color: #fff; }
+.suivi-card.done .suivi-circle { background: #30c070; border-color: #30c070; }
+.suivi-type { font-size: 0.58rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+.suivi-name { font-size: 0.88rem; font-weight: 600; }
+.suivi-card.done .suivi-name { color: #30c070; }
+.suivi-tag { font-size: 0.72rem; color: #666; margin-top: 3px; }
+.week-info { margin: 0 16px; padding: 14px; background: #141414; border: 1px solid #252525; font-size: 0.72rem; color: #666; line-height: 1.6; }
+.week-info strong { color: #ede8e0; display: block; margin-bottom: 4px; font-size: 0.78rem; }
+
+/* INFO */
+.info-section { margin: 20px 16px 0; }
+.info-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 1.5px; color: #e8300f; border-bottom: 1px solid #252525; padding-bottom: 8px; margin-bottom: 12px; }
+.info-card { background: #141414; border: 1px solid #252525; padding: 16px 18px; margin-bottom: 8px; }
+.info-card-title { font-weight: 700; font-size: 0.82rem; margin-bottom: 8px; }
+.info-card-text { font-size: 0.78rem; color: #bbb; line-height: 1.75; white-space: pre-line; font-weight: 300; }
+.reset-btn { display: block; margin: 20px 16px 0; width: calc(100% - 32px); padding: 16px; background: none; border: 1px solid #444; color: #666; font-family: 'Barlow', sans-serif; font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; font-weight: 700; }
+
+/* TOAST */
+#toast { position: fixed; bottom: calc(80px + env(safe-area-inset-bottom,0)); left: 50%; transform: translateX(-50%) translateY(20px); background: #30c070; color: #fff; padding: 10px 20px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; z-index: 200; }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="nav"></div>
+
+<div class="page on" id="page-home"></div>
+<div class="page" id="page-plan"></div>
+<div class="page" id="page-suivi"></div>
+<div class="page" id="page-info"></div>
+
+<script>
+const PLAN = [
+  {week:1,phase:1,label:"SEMAINE 1",focus:"Prise de contact — écoute ton corps",decharge:false,sessions:[
+    {id:"s1a",type:"A",tag:"Séance A — Lundi/Mardi",name:"🏃 Course découverte",exercises:["Protocole cheville 5 min : cercles × 20, équilibre unipodal × 30 sec/pied, montées pointe × 20","Échauffement 10 min : marche rapide + mobilité hanches","20 min : 1 min course lente / 2 min marche. Allure conversationnelle.","Retour au calme : 5 min marche + 15 min étirements mollets/quadriceps/ischio"],tip:{t:"ALLURE CIBLE",c:"Tu dois pouvoir tenir une conversation. Si tu souffles trop, ralentis. À 108kg les impacts comptent — mieux vaut marcher plus que forcer."}},
+    {id:"s1b",type:"B",tag:"Séance B — Mercredi/Jeudi",name:"💪 Renforcement général",exercises:["Échauffement 10 min vélo ou rameur (intensité très faible)","3 circuits — repos 90 sec entre circuits :","Squat corps libre × 15 (descente lente, genoux dans l'axe)","Pompes genoux au sol × 10","Tirage horizontal barre basse × 10","Gainage planche frontale × 30 sec","Fentes alternées × 8 chaque jambe (mouvement contrôlé, pas de saut)","15 min étirements post-séance"],tip:{t:"TECHNIQUE",c:"Qualité absolue. Pas de charge externe cette semaine — ton poids de corps est déjà un bon stimulus."}},
+    {id:"s1c",type:"C",tag:"Séance C — Weekend (optionnelle)",name:"🚶 Marche active terrain",exercises:["40 min marche en nature avec dénivelé si possible","Rythme soutenu mais confortable","Sac à dos léger ou vide pour habituer la posture"]},
+  ]},
+  {week:2,phase:1,label:"SEMAINE 2",focus:"+5 min · Introduction burpees",decharge:false,sessions:[
+    {id:"s2a",type:"A",tag:"Séance A",name:"🏃 25 min run/marche",exercises:["Protocole cheville 5 min + échauffement 10 min","25 min : 2 min course / 2 min marche","Si ça se passe bien : essaie 3 min course / 1 min marche en fin de séance","15 min étirements"]},
+    {id:"s2b",type:"B",tag:"Séance B",name:"💪 Circuit x3 + intro burpees",exercises:["Même circuit qu'en S1","Ajout en fin de chaque circuit : 5 Burpees (sans saut si besoin)","Technique : debout → mains sol → pieds arrière → pompe → pieds vers mains → debout"],tip:{t:"BURPEE SPARTAN",c:"Chaque obstacle raté = 30 burpees en course. Commence à les apprivoiser. Version sans saut acceptée en phase 1."}},
+    {id:"s2c",type:"C",tag:"Séance C",name:"🚶 Marche 45 min vallonné",exercises:["45 min terrain avec dénivelé (escaliers, colline)","Cherche activement les montées"]},
+  ]},
+  {week:3,phase:1,label:"SEMAINE 3",focus:"Consolidation — premier 30 min",decharge:false,sessions:[
+    {id:"s3a",type:"A",tag:"Séance A",name:"🏃 30 min — objectif sans pause",exercises:["Protocole cheville 5 min + échauffement 10 min","Objectif : 30 min de course continue. Si besoin, 2-3 pauses marche de 1 min max.","Pas de pression sur la distance, seulement le temps","15 min étirements"]},
+    {id:"s3b",type:"B",tag:"Séance B",name:"💪 Circuit x4 — montée en charge",exercises:["4 circuits (au lieu de 3)","Squat × 15, Pompes × 12, Tirage × 12, Planche × 40 sec, Fentes × 10, Burpees × 8","Récupération entre circuits : 75 sec"]},
+    {id:"s3c",type:"C",tag:"Séance C",name:"🚶 50 min marche ou récup",exercises:["50 min marche terrain","Ou yoga/étirements 30 min si fatigue notable"]},
+  ]},
+  {week:4,phase:1,label:"SEMAINE 4 — DÉCHARGE",focus:"Récupération active obligatoire",decharge:true,sessions:[
+    {id:"s4a",type:"A",tag:"Séance A",name:"🏃 20 min footing très lent",exercises:["Allure minimale, terrain plat","Observe ta foulée et ta respiration"],tip:{t:"DÉCHARGE",c:"Le corps progresse pendant le repos. À 48 ans cette semaine est doublement importante. Ne la saute pas."}},
+    {id:"s4b",type:"B",tag:"Séance B",name:"💪 Circuit x2 seulement",exercises:["2 circuits uniquement","Reps réduites de 30%","Focus qualité de mouvement"]},
+  ]},
+  {week:5,phase:2,label:"SEMAINE 5",focus:"Intro trail + farmer carry",decharge:false,sessions:[
+    {id:"s5a",type:"A",tag:"Séance A — Trail",name:"⛰️ 35 min trail avec dénivelé",exercises:["Protocole cheville 5 min + échauffement 10 min","Itinéraire avec 2-3 côtes de 50m+ minimum","En montée : marche rapide ou course selon capacités","En descente : course légère, petites foulées, attention cheville","4 accélérations 30 sec sur terrain plat","15 min étirements"],tip:{t:"DESCENTE",c:"Les descentes à 108kg sollicitent fortement genoux et cheville. Genoux fléchis, petites foulées, pieds à plat."}},
+    {id:"s5b",type:"B",tag:"Séance B — Obstacles",name:"🧱 Circuit obstacles 4 tours",exercises:["Échauffement 10 min","Farmer carry (2 haltères 10kg) × 30m aller-retour","Burpees × 10","Tirage barre basse ou tractions assistées × 8","Box step (monter/descendre un banc — pas de saut) × 10","Planche × 45 sec","Ramper au sol sur 10m","4 tours — repos 60 sec"],tip:{t:"FARMER CARRY",c:"Exercice Spartan par excellence. Porte lourd, dos droit, épaules en arrière. Prépare les épaules et avant-bras pour les obstacles de portage."}},
+    {id:"s5c",type:"C",tag:"Séance C",name:"🥾 55 min marche sac 2-3L",exercises:["55 min en nature avec dénivelé","Sac à dos avec 2-3L d'eau","Pas de course, marche active uniquement"]},
+  ]},
+  {week:6,phase:2,label:"SEMAINE 6",focus:"Volume + accélérations × 6",decharge:false,sessions:[
+    {id:"s6a",type:"A",tag:"Séance A",name:"⛰️ 40 min trail — 6 accélérations",exercises:["Protocole cheville + échauffement 10 min","40 min trail vallonné","6 accélérations 45 sec","Récupération 90 sec entre chaque"]},
+    {id:"s6b",type:"B",tag:"Séance B",name:"💪 Circuit x5 — montée en charge",exercises:["Farmer carry (12-15kg) × 40m","Burpees × 12","Tractions ou tirage barre haute assisté × 6-8","Goblet squat kettlebell/haltère × 15","Planche latérale × 30 sec chaque côté","Box step × 12","5 tours — repos 60 sec"]},
+    {id:"s6c",type:"C",tag:"Séance C",name:"🥾 60 min sortie longue sac 3kg",exercises:["Sac de 3kg","Maximum dénivelé possible","Quelques passages de course en descente douce"]},
+  ]},
+  {week:7,phase:2,label:"SEMAINE 7 — DÉCHARGE",focus:"Récupération active mi-plan",decharge:true,sessions:[
+    {id:"s7a",type:"A",tag:"Séance A",name:"🏃 25 min footing facile",exercises:["Allure très légère","Terrain plat de préférence"],tip:{t:"DÉCHARGE S7",c:"Décharge toutes les 3 semaines à 48 ans. Ne cherche pas à récupérer le volume — cette semaine fait partie du plan."}},
+    {id:"s7b",type:"B",tag:"Séance B",name:"💪 Circuit x2 léger",exercises:["2 circuits","Charge réduite 30%","Focus mobilité et technique"]},
+  ]},
+  {week:8,phase:2,label:"SEMAINE 8",focus:"Côtes répétées + mini simulation",decharge:false,sessions:[
+    {id:"s8a",type:"A",tag:"Séance A",name:"⛰️ 45 min — côtes × 8",exercises:["Protocole cheville + échauffement 10 min","Trouve une côte de 100-150m","Monte en courant × 8 répétitions — descente en marchant","+ 15 min footing retour au calme"]},
+    {id:"s8b",type:"B",tag:"Séance B",name:"🧱 Mini simulation race",exercises:["2km de course, puis sans pause :","Farmer carry 15kg × 50m","Burpees × 15","Tractions ou tirage × max","2km de course","Ramper 20m au sol","Burpees × 15"],tip:{t:"MINI SPARTAN",c:"Première vraie simulation. Le but : faire de la force après un effort cardio. Les jambes brûlent, les bras tremblent — c'est exactement ça la Spartan."}},
+    {id:"s8c",type:"C",tag:"Séance C",name:"🥾 70 min sortie sac 5kg",exercises:["Sac 5kg","Maximum dénivelé","Commence à peser — bienvenue en vraie prépa montagne"]},
+  ]},
+  {week:9,phase:2,label:"SEMAINE 9 — DÉCHARGE",focus:"Récupération avant phase spécifique",decharge:true,sessions:[
+    {id:"s9a",type:"A",tag:"Séance A",name:"🏃 25 min footing léger",exercises:["Effort minimal","Terrain plat"]},
+    {id:"s9b",type:"B",tag:"Séance B",name:"💪 Circuit x2 entretien",exercises:["2 tours légers","Focus technique","Pas de farmer carry lourd"]},
+  ]},
+  {week:10,phase:3,label:"SEMAINE 10",focus:"Intensité haute — 1min/1min côte",decharge:false,sessions:[
+    {id:"s10a",type:"A",tag:"Séance A",name:"⛰️ 40 min intervalle intensif",exercises:["Protocole cheville + échauffement 10 min","10 × (1 min effort maximal en montée / 1 min marche descente)","Les 1 min d'effort doivent faire mal — c'est voulu","Retour calme 10 min + 15 min étirements"],tip:{t:"INTENSITÉ",c:"Les intervalles en côte sont le meilleur entraînement pour Verbier. 1 min à fond, récup vraie. Pas de demi-mesure."}},
+    {id:"s10b",type:"B",tag:"Séance B",name:"🧱 Circuit sac lesté 8kg",exercises:["Sac 8kg sur le dos pendant tout le circuit :","Squats × 15","Burpees avec sac × 10 (très difficile, c'est l'objectif)","Farmer carry 15kg × 40m","Pompes × 12","Gainage × 1 min","4 tours — repos 60 sec"]},
+    {id:"s10c",type:"C",tag:"Séance C",name:"🥾 75 min sortie sac 5-8kg",exercises:["Maximum dénivelé","Alterne marche forte en côte + course sur plat et descente douce","Emporte ta propre hydratation — simule les conditions de course"]},
+  ]},
+  {week:11,phase:3,label:"SEMAINE 11",focus:"Montée en puissance — sac 10kg",decharge:false,sessions:[
+    {id:"s11a",type:"A",tag:"Séance A",name:"⛰️ 45 min — côtes × 10",exercises:["10 répétitions de côtes (format S10)","+ 4 accélérations 1 min sur plat en fin de séance","15 min étirements"]},
+    {id:"s11b",type:"B",tag:"Séance B",name:"🧱 Circuit sac 10kg — 5 tours",exercises:["Sac 10kg sur le dos — tout le circuit","Squats × 15, Burpees × 10, Farmer carry 20kg × 40m","Pompes × 12, Planche × 1 min, Box step × 12","5 tours — repos 60 sec"]},
+    {id:"s11c",type:"C",tag:"Séance C",name:"🥾 80 min sortie montagne sac 8kg",exercises:["Idéalement en montagne (Verbier-like)","Sac 8kg — terrain accidenté maximum","Prépare mentalement à la durée et à l'inconfort"]},
+  ]},
+  {week:12,phase:3,label:"SEMAINE 12",focus:"PIC DE PRÉPA — simulation complète",decharge:false,sessions:[
+    {id:"s12a",type:"A",tag:"Séance A",name:"⛰️ 50 min trail — côtes × 10 max",exercises:["Intensité maximum sur chaque répétition","Dernière séance d'intensité haute du plan"]},
+    {id:"s12b",type:"B",tag:"Séance B",name:"🏆 SIMULATION SPARTAN RACE",exercises:["Course 3km (trail, sac 5kg)","Farmer carry 20kg × 50m","Burpees × 30 (comme si obstacle raté)","Tractions ou tirage × maximum","Course 2km","Portage sac 10kg × 500m","Burpees × 15","Course finale 2km — tout ce qui reste"],tip:{t:"MENTAL",c:"La séance la plus dure du plan. Si tu termines ça à 48 ans et 108kg, la Spartan de Verbier est dans ta portée."}},
+    {id:"s12c",type:"C",tag:"Séance C",name:"🚶 Récupération active 45 min",exercises:["Marche douce uniquement","Étirements 20 min","Rouleau de massage si disponible (mollets, quadriceps, IT band)"]},
+  ]},
+  {week:13,phase:3,label:"SEMAINE 13 — DÉCHARGE",focus:"Récupération critique avant affûtage",decharge:true,sessions:[
+    {id:"s13a",type:"A",tag:"Séance A",name:"🏃 25 min très lent",exercises:["Terrain plat, allure minimale","Bouger, pas performer"],tip:{t:"CRITIQUE",c:"Après S12, corps sous stress maximum. Cette décharge n'est pas optionnelle — condition pour arriver frais à la race."}},
+    {id:"s13b",type:"B",tag:"Séance B",name:"💪 x2 circuits — mobilité priorité",exercises:["2 circuits uniquement","Charge réduite 40%","15 min yoga ou mobilité articulaire en plus"]},
+  ]},
+  {week:14,phase:4,label:"SEMAINE 14",focus:"Volume -40% — jambes réactives",decharge:false,sessions:[
+    {id:"s14a",type:"A",tag:"Séance A",name:"🏃 30 min trail léger + accélérations",exercises:["30 min trail à allure modérée","4 × 20 sec vive allure en côte — garder les jambes réactives","15 min étirements"]},
+    {id:"s14b",type:"B",tag:"Séance B",name:"💪 Circuit x2 — charges légères",exercises:["Tous les exercices habituels, charge réduite 40%","Burpees × 8 pour maintenir le geste","Pas de farmer carry lourd"]},
+  ]},
+  {week:15,phase:4,label:"SEMAINE 15",focus:"Volume -60% — repos prioritaire",decharge:true,sessions:[
+    {id:"s15a",type:"A",tag:"Séance A",name:"🏃 20 min footing léger",exercises:["Terrain plat, juste bouger","Pas de performance"],tip:{t:"PRIORITÉ",c:"Sommeil 8h minimum. Glucides complexes (pâtes, riz, patate douce). 2L d'eau/jour. Le travail est fait."}},
+    {id:"s15b",type:"B",tag:"Séance B",name:"🧘 Mobilité 15 min + stretching 10 min",exercises:["Mobilité : hanche, mollets, épaules, ischio-jambiers","Pas de charges, pas d'effort notable","25 min maximum"]},
+  ]},
+  {week:16,phase:4,label:"SEMAINE 16 — RACE WEEK",focus:"Repos, logistique, mental",decharge:true,sessions:[
+    {id:"s16a",type:"C",tag:"Lundi-Mardi",name:"🚶 2 × 20 min marche légère",exercises:["Les jambes bougent, rien de plus","Pas de course, pas d'effort"]},
+    {id:"s16b",type:"C",tag:"Mercredi-Jeudi",name:"😴 Repos complet + préparation",exercises:["Prépare matériel : chaussures trail, vêtements techniques, gants de travail","Consulte le parcours Spartan Verbier, repère les obstacles","Prépare le sac de course la veille pour éviter le stress"]},
+    {id:"s16c",type:"C",tag:"Veille de la race",name:"🍝 Charge glucidique + sommeil",exercises:["Repas du soir : pâtes ou riz, sauce légère, protéine maigre","Couche-toi tôt — ton corps travaille pendant que tu dors","Sac prêt, dossard prêt, réveil set"]},
+  ]},
+];
+
+const ALL = PLAN.flatMap(w => w.sessions);
+const PC = {1:'#30c070',2:'#f0c030',3:'#e8300f',4:'#4088f0'};
+const SC = {A:'#e8300f',B:'#f07020',C:'#f0c030'};
+const PN = ['Fondations','Construction','Spécifique','Affûtage'];
+
+let checked = {};
+let currentPage = 'home';
+let currentPhase = 1;
+let currentWeek = 1;
+
+function load() {
+  try { checked = JSON.parse(localStorage.getItem('spartan_v3') || '{}'); } catch(e) { checked = {}; }
+}
+function save() {
+  try { localStorage.setItem('spartan_v3', JSON.stringify(checked)); } catch(e) {}
+}
+function toggle(id) {
+  checked[id] = !checked[id];
+  save();
+  if (checked[id]) showToast('✓ Séance complétée !');
+  render();
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── NAV ──
+function renderNav() {
+  const items = [
+    {id:'home',label:'Accueil',icon:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>'},
+    {id:'plan',label:'Plan',icon:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'},
+    {id:'suivi',label:'Suivi',icon:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'},
+    {id:'info',label:'Infos',icon:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'},
+  ];
+  document.getElementById('nav').innerHTML = items.map(it =>
+    `<button class="nb ${currentPage===it.id?'on':''}" onclick="goPage('${it.id}')">
+      <svg viewBox="0 0 24 24">${it.icon}</svg>
+      <span>${it.label}</span>
+    </button>`
+  ).join('');
+}
+
+function goPage(p) { currentPage = p; render(); }
+
+// ── HOME ──
+function renderHome() {
+  const total = ALL.length;
+  const done = ALL.filter(s => checked[s.id]).length;
+  const pct = Math.round(done/total*100);
+  const next = ALL.find(s => !checked[s.id]);
+  const nextW = next ? PLAN.find(w => w.sessions.some(s => s.id === next.id)) : null;
+  const phaseStats = [1,2,3,4].map(p => {
+    const ps = PLAN.filter(w=>w.phase===p).flatMap(w=>w.sessions);
+    const pd = ps.filter(s=>checked[s.id]).length;
+    return {pct: ps.length ? Math.round(pd/ps.length*100):0, color:PC[p], label:PN[p-1], flex:[3,5,4,3][p-1]};
+  });
+
+  document.getElementById('page-home').innerHTML = `
+    <div class="ph" style="position:relative;overflow:hidden">
+      <div class="home-glow"></div>
+      <div class="home-tag">🏔 Verbier · Septembre 2026</div>
+      <div class="big-title">SPARTAN<br><span>RACE</span></div>
+      <div class="home-meta">16 semaines · 48 ans · 108 kg · Ancien sportif</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n">16</div><div class="stat-l">Semaines</div></div>
+      <div class="stat"><div class="stat-n">${pct}%</div><div class="stat-l">Complété</div></div>
+      <div class="stat"><div class="stat-n">4</div><div class="stat-l">Phases</div></div>
+      <div class="stat"><div class="stat-n">${done}</div><div class="stat-l">Séances ✓</div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-label">Progression globale</div>
+      <div class="prog-phases">
+        ${phaseStats.map(ps=>`<div class="prog-phase" style="flex:${ps.flex}">
+          <div class="prog-bar-wrap"><div class="prog-bar" style="width:${ps.pct}%;background:${ps.color}"></div></div>
+          <div class="prog-phase-label">${ps.label}</div>
+        </div>`).join('')}
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:baseline;gap:6px">
+        <div class="prog-pct">${pct}%</div>
+        <div class="prog-sub">du plan complété (${done}/${total})</div>
+      </div>
+    </div>
+    ${next ? `
+    <div class="next-card">
+      <div class="next-label">Prochaine séance</div>
+      <div class="next-name">${next.name}</div>
+      <div class="next-desc">${next.tag} · ${nextW?.label}</div>
+      <button class="next-btn" onclick="toggle('${next.id}')">✓ MARQUER COMME FAITE</button>
+    </div>` : `
+    <div style="margin:12px 16px 0;background:rgba(48,192,112,0.08);border:1px solid #30c070;padding:20px;text-align:center">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#30c070;letter-spacing:2px">🏆 PLAN TERMINÉ !</div>
+      <div style="font-size:0.78rem;color:#bbb;margin-top:6px">Tu es prêt pour la Spartan de Verbier. AROO! 🐉</div>
+    </div>`}
+    <div class="tips-row">
+      ${[['🦶','Cheville','Renfo 5 min avant chaque séance A. Obligatoire.'],['💥','Burpees','Obstacle raté = 30 burpees. Entraîne-toi dès S2.'],['😴','Récupération','48h min entre séances. Non négociable à 48 ans.'],['⏱','Échauffement','10 min avant chaque séance. Jamais moins.']].map(([icon,title,text])=>`
+      <div class="tip-chip"><div class="tip-icon">${icon}</div><div class="tip-title">${title}</div><div class="tip-text">${text}</div></div>`).join('')}
+    </div>
+    <div style="height:16px"></div>`;
+}
+
+// ── PLAN ──
+function renderPlan() {
+  const phColors = {1:'#30c070',2:'#f0c030',3:'#e8300f',4:'#4088f0'};
+  const phDesc = {
+    1:'S1–S4 · Réadaptation progressive. Pas de saut, pas d\'impact lourd.',
+    2:'S5–S9 · Trail, farmer carry, obstacles. Le corps s\'adapte vraiment.',
+    3:'S10–S13 · Simulation race. Terrain Verbier, charges, intensité.',
+    4:'S14–S16 · Volume réduit. Arriver frais et confiant.'
+  };
+  const phLabels = {1:'🟢 Fondations',2:'🟡 Construction',3:'🔴 Spécifique',4:'🔵 Affûtage'};
+  const weeks = PLAN.filter(w => w.phase === currentPhase);
+
+  document.getElementById('page-plan').innerHTML = `
+    <div class="ph">
+      <div class="section-title">PLAN COMPLET</div>
+      <div style="font-size:0.75rem;color:#666;margin-top:4px;font-weight:300">16 semaines · Adapté 48 ans · 108 kg · Cheville</div>
+    </div>
+    <div class="phase-tabs">
+      ${[1,2,3,4].map(n=>`<button class="phase-tab" style="border-bottom-color:${currentPhase===n?phColors[n]:'transparent'};color:${currentPhase===n?phColors[n]:'#666'}" onclick="setPhase(${n})">${phLabels[n]}</button>`).join('')}
+    </div>
+    <div class="phase-intro">
+      <div class="phase-ghost">${currentPhase}</div>
+      <div class="phase-badge" style="background:${phColors[currentPhase]}20;color:${phColors[currentPhase]}">Phase ${currentPhase}</div>
+      <div class="phase-name">${PN[currentPhase-1].toUpperCase()}</div>
+      <div class="phase-desc">${phDesc[currentPhase]}</div>
+    </div>
+    <div class="weeks-wrap">
+      ${weeks.map((week,i) => renderWeekCard(week, i===0)).join('')}
+    </div>`;
+}
+
+function setPhase(n) { currentPhase = n; renderPlan(); }
+
+function renderWeekCard(week, defaultOpen) {
+  const allDone = week.sessions.every(s => checked[s.id]);
+  const anyDone = week.sessions.some(s => checked[s.id]);
+  const open = defaultOpen;
+  const id = 'wc'+week.week;
+  return `
+  <div class="week-card ${week.decharge?'decharge':''} ${open?'open':''}" id="${id}">
+    <div class="week-head" onclick="toggleWeek('${id}')">
+      <div style="flex:1">
+        <div class="week-num">${week.label}</div>
+        <div class="week-focus">${week.focus}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="week-check ${allDone?'done':''}">${allDone?'✓':anyDone?'…':''}</div>
+        <div class="week-toggle">+</div>
+      </div>
+    </div>
+    <div class="week-body">
+      ${week.sessions.map(s => renderSession(s)).join('')}
+    </div>
+  </div>`;
+}
+
+function renderSession(s) {
+  const col = SC[s.type] || '#666';
+  const done = !!checked[s.id];
+  const exoId = 'exo-'+s.id;
+  return `
+  <div class="session" style="border-left:3px solid ${col}">
+    <div class="session-tag" style="color:${col}">${s.tag}</div>
+    <div class="session-name">${s.name}</div>
+    <button class="check-btn ${done?'done':''}" onclick="toggle('${s.id}')">
+      <div class="check-circle">${done?'✓':''}</div>
+      ${done?'Séance complétée ✓':'Marquer comme faite'}
+    </button>
+    ${s.type==='A'?`<div class="ankle-note"><strong>🦶 PROTOCOLE CHEVILLE</strong>Avant la séance : cercles × 20, équilibre unipodal × 30 sec/pied, montées pointe × 20. Chevillère recommandée jusqu'en S8.</div>`:''}
+    <button class="detail-btn" onclick="toggleDetail('${exoId}',this)">▼ Voir le détail</button>
+    <div class="exo-list" id="${exoId}">
+      ${s.exercises.map(e=>`<div class="exo-item"><span class="exo-arrow">→</span>${e}</div>`).join('')}
+      ${s.tip?`<div class="session-tip"><strong>⚡ ${s.tip.t}</strong>${s.tip.c}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function toggleWeek(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+function toggleDetail(id, btn) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+  btn.textContent = el.classList.contains('open') ? '▲ Masquer le détail' : '▼ Voir le détail';
+}
+
+// ── SUIVI ──
+function renderSuivi() {
+  const week = PLAN.find(w => w.week === currentWeek);
+  const total = week.sessions.length;
+  const done = week.sessions.filter(s => checked[s.id]).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const r = 26, circ = 2*Math.PI*r;
+  const offset = circ - circ*pct/100;
+
+  document.getElementById('page-suivi').innerHTML = `
+    <div class="ph">
+      <div class="section-title">SUIVI</div>
+    </div>
+    <div class="week-nav">
+      <button class="nav-arrow" onclick="changeWeek(-1)" ${currentWeek<=1?'disabled':''}>‹</button>
+      <div class="week-nav-label">SEMAINE ${currentWeek}</div>
+      <button class="nav-arrow" onclick="changeWeek(1)" ${currentWeek>=16?'disabled':''}>›</button>
+    </div>
+    <div class="ring-card">
+      <div class="ring-wrap">
+        <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
+          <circle cx="32" cy="32" r="${r}" fill="none" stroke="#252525" stroke-width="4"/>
+          <circle cx="32" cy="32" r="${r}" fill="none" stroke="#e8300f" stroke-width="4" stroke-linecap="round"
+            stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"/>
+        </svg>
+        <div class="ring-text">${pct}%</div>
+      </div>
+      <div>
+        <div class="ring-done">${done} / ${total}</div>
+        <div class="ring-sub">séances complétées</div>
+        <div class="ring-sub" style="margin-top:2px">${week.focus}</div>
+      </div>
+    </div>
+    <div class="suivi-sessions">
+      ${week.sessions.map(s => {
+        const isDone = !!checked[s.id];
+        const col = SC[s.type]||'#666';
+        return `<div class="suivi-card ${isDone?'done':''}" onclick="toggle('${s.id}')">
+          <div class="suivi-circle">${isDone?'✓':''}</div>
+          <div style="flex:1">
+            <div class="suivi-type" style="color:${col}">Séance ${s.type}</div>
+            <div class="suivi-name">${s.name}</div>
+            <div class="suivi-tag">${s.tag}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="week-info">
+      <strong>Phase ${week.phase} · ${PN[week.phase-1]}</strong>
+      ${week.decharge?'⚠️ Semaine de décharge — Volume réduit obligatoire. Ne saute pas cette étape.':'Minimum 48h de repos entre chaque séance.'}
+    </div>
+    <div style="height:16px"></div>`;
+}
+
+function changeWeek(d) {
+  currentWeek = Math.max(1, Math.min(16, currentWeek+d));
+  renderSuivi();
+}
+
+// ── INFO ──
+function renderInfo() {
+  const sections = [
+    {title:'🦶 CHEVILLE — PROTOCOLE',t:'5 min avant chaque séance A (obligatoire)',c:'1. Cercles de cheville × 20 dans chaque sens\n2. Équilibre unipodal × 30 sec chaque pied\n3. Montées sur pointe × 20 (deux pieds puis un seul)\n4. Alphabet : dessine les lettres A→Z avec le pied en l\'air\n→ Chevillère de soutien légère recommandée jusqu\'en S8.'},
+    {title:'⏱ ÉCHAUFFEMENT — 10 MIN',t:'Avant chaque séance',c:'2 min marche rapide → 2 min genoux hauts/talons-fesses → 1 min rotations hanches → 1 min fentes dynamiques → 1 min rotations épaules → 3 min vélo léger ou trot très lent'},
+    {title:'💤 RÉCUPÉRATION 48 ANS',t:'Règles non négociables',c:'→ 48h minimum entre deux séances\n→ 8h de sommeil (GH et testostérone se régénèrent la nuit)\n→ Protéines : 1.6g/kg = ~173g/jour\n→ Décharge toutes les 3 semaines (S4, S7, S10, S13)\n→ Après séance dure : 15 min étirements + douche froide'},
+    {title:'🏔 JOUR DE RACE — CHECK-LIST',t:'Verbier · Septembre 2026',c:'👟 Chaussures trail grip (pas de running route)\n🧤 Gants de travail fins (obstacles métalliques)\n💧 Hydratation la veille : 2L minimum\n🍌 Petit-déj 2h avant : avoine + banane + café\n🔥 Obstacle raté → 30 burpees, on avance\n🐢 Départ calme — la montagne ralentit tout le monde\n📱 Numéro d\'urgence sur toi'},
+    {title:'⚙️ TON PROFIL',t:'Données plan',c:'48 ans · 108 kg · 180 cm\nAncien sportif (pause 3 ans)\nCheville à surveiller\nPlan généré : Mai 2026'},
+  ];
+
+  document.getElementById('page-info').innerHTML = `
+    <div class="ph">
+      <div class="section-title">INFOS & CONSEILS</div>
+    </div>
+    ${sections.map(s=>`
+    <div class="info-section">
+      <div class="info-section-title">${s.title}</div>
+      <div class="info-card">
+        <div class="info-card-title">${s.t}</div>
+        <div class="info-card-text">${s.c}</div>
+      </div>
+    </div>`).join('')}
+    <button class="reset-btn" onclick="resetAll()">Réinitialiser toutes les séances</button>
+    <div style="height:20px"></div>`;
+}
+
+function resetAll() {
+  if (confirm('Remettre toutes les séances à zéro ?')) {
+    checked = {}; save(); showToast('Plan réinitialisé'); render();
+  }
+}
+
+// ── RENDER ──
+function render() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById('page-'+currentPage).classList.add('on');
+  if (currentPage==='home') renderHome();
+  else if (currentPage==='plan') renderPlan();
+  else if (currentPage==='suivi') renderSuivi();
+  else if (currentPage==='info') renderInfo();
+  renderNav();
+}
+
+// ── INIT ──
+load();
+const firstIncomplete = PLAN.find(w => w.sessions.some(s => !checked[s.id]));
+if (firstIncomplete) currentWeek = firstIncomplete.week;
+render();
+</script>
+</body>
+</html>
